@@ -7,5 +7,5 @@
   },
   "maxCorrectionCycles": 2,
   "protectedPaths": [".env", ".env.local", ".env.*", "secrets/**"],
-  "validation": ["npm run build", "npm run build:extension"]
+  "validation": ["npm test"]
 }

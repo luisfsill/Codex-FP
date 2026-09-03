@@ -1,7 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { classify } from './classifier.js';
-const input = JSON.parse(fs.readFileSync(0, 'utf8') || '{}');
+let input = {};
+try { input = JSON.parse(fs.readFileSync(0, 'utf8') || '{}'); }
+catch { process.exit(0); }
 const prompt = input.prompt || '';
 if (process.env.CODEX_FEATURE_PIPELINE_ACTIVE === '1' || prompt.includes('[CODEX_FEATURE_PIPELINE_PHASE]')) process.exit(0);
 const result = classify(prompt);

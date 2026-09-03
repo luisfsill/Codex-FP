@@ -5,3 +5,4 @@ test('classifica pergunta como análise', () => assert.equal(classify('Como func
 test('classifica implementação comum', () => assert.deepEqual(classify('Implementar filtro salvo'), { intent: 'implementation', level: 'NORMAL' }));
 test('classifica integração como complexa', () => assert.equal(classify('Criar integração com webhook').level, 'COMPLEXA'));
 test('classifica autenticação como crítica', () => assert.equal(classify('Alterar autenticação').level, 'CRITICA'));
+test('classifica extensão e publicação como complexa', () => assert.equal(classify('Implementar instalação e publicação da extensão').level, 'COMPLEXA'));

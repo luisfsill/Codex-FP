@@ -1,17 +1,13 @@
-import fs from 'node:fs';
-const usage = 'feature [--simple|--normal|--complex|--critical] [--plan-only|--implement-plan <path>|--review-only|--dry-run] "prompt"';
-export async function runCli(args) {
-  const flags = {}; const rest = [];
-  for (let i = 0; i < args.length; i++) { const a = args[i]; if (a === '--help') return console.log(usage); if (a === '--version') return console.log('0.1.0'); if (a.startsWith('--')) { const k = a.slice(2); if (k === 'implement-plan' || k === 'config' || k === 'request-file') flags[k] = args[++i]; else flags[k] = true; } else rest.push(a); }
-  const modes = ['plan-only','implement-plan','review-only']; if (modes.filter((m) => flags[m]).length > 1) throw Object.assign(new Error('Modos incompatíveis.'), { exitCode: 2 });
-  const forced = flags.simple ? 'trivial' : flags.normal ? 'normal' : flags.complex ? 'complexa' : flags.critical ? 'critica' : null;
-  const prompt = rest.join(' ') || (flags['request-file'] && JSON.parse(fs.readFileSync(flags['request-file'], 'utf8')).prompt);
-  if (!prompt && !flags['review-only']) throw Object.assign(new Error(`Informe um prompt. Uso: ${usage}`), { exitCode: 2 });
-  const result = classifyPrompt(prompt || 'review', forced);
-  if (result.intent === 'analysis' && !flags['review-only']) { console.log('[feature] solicitação de análise; pipeline não acionado'); return; }
-  const phases = result.level === 'TRIVIAL' ? ['implement Luna/medium','validate'] : flags['review-only'] ? ['review Sol/low'] : flags['plan-only'] ? ['plan Sol/medium'] : ['plan Sol/medium','implement Luna/medium','validate','review Sol/low'];
-  if (flags['dry-run']) return console.log(JSON.stringify({ classification: result, phases, prompt }, null, 2));
-  throw new Error('Execução de fases ainda requer configuração do projeto. Use --dry-run para validar a rota.');
+import fs from 'node:fs'; import path from 'node:path'; import { parseArgs, forcedLevel } from './args.js'; import { classify } from './classifier.js'; import { findProjectRoot, loadConfig } from './config.js'; import { installProject } from './project-installer.js'; import { runPipeline } from './orchestrator.js'; import { PipelineError } from './errors.js';
+const VERSION = '1.0.0'; const usage = `Codex Feature Pipeline ${VERSION}\n\nUso:\n  feature "solicitação"\n  feature --dry-run "solicitação"\n  feature --simple|--normal|--complex|--critical "solicitação"\n  feature --plan-only "solicitação"\n  feature --implement-plan <arquivo> ["solicitação"]\n  feature --review-only ["contexto"]\n  feature install-project [--project <pasta>]`;
+export async function runCli(argv) {
+  const { flags: rawFlags, prompt: argumentPrompt } = parseArgs(argv); if (rawFlags.help) return console.log(usage); if (rawFlags.version) return console.log(VERSION); if (rawFlags.installProject) { const result = installProject(rawFlags.project || process.cwd()); console.log(`[feature] projeto configurado: ${result.root}`); return result; }
+  const root = findProjectRoot(process.cwd()); const { config, configPath, exists } = loadConfig(root, rawFlags.config); let request = argumentPrompt;
+  if (!request && rawFlags['request-file']) request = JSON.parse(fs.readFileSync(path.resolve(root, rawFlags['request-file']), 'utf8')).prompt;
+  if (!request && rawFlags['implement-plan']) request = `Implementar o plano ${rawFlags['implement-plan']}`; if (!request && rawFlags['review-only']) request = 'Revisar as alterações atuais.'; if (!request) throw new PipelineError(`Informe uma solicitação.\n${usage}`, 2, 'invalid_arguments');
+  const classification = classify(request, forcedLevel(rawFlags)); if (classification.intent !== 'implementation' && !rawFlags['review-only']) { console.log('[feature] solicitação de análise; pipeline não acionado'); return { status: 'not_triggered' }; }
+  const flags = { dryRun: !!rawFlags['dry-run'], planOnly: !!rawFlags['plan-only'], implementPlan: rawFlags['implement-plan'], reviewOnly: !!rawFlags['review-only'], approveForMe: !!rawFlags['approve-for-me'] }; const level = classification.level || 'NORMAL'; const phases = phasesFor(level, flags, config);
+  if (flags.dryRun) { const output = { projectRoot: root, configPath, configFound: exists, classification: { ...classification, level }, phases }; console.log(JSON.stringify(output, null, 2)); return output; }
+  return runPipeline({ request, classification: level, flags, root, config });
 }
-import { classify } from './classifier.js';
-function classifyPrompt(prompt, forced) { return classify(prompt, forced); }
+function phasesFor(level, flags, config) { if (flags.reviewOnly) return [`review ${config.models.reviewer.model}/${config.models.reviewer.reasoning}`]; if (flags.planOnly) return [`plan ${config.models.planner.model}/${config.models.planner.reasoning}`]; if (level === 'TRIVIAL') return [`implement ${config.models.implementer.model}/${config.models.implementer.reasoning}`, 'validate']; const reviewer = level === 'CRITICA' ? config.models.criticalReviewer : config.models.reviewer; return [`plan ${config.models.planner.model}/${config.models.planner.reasoning}`, `implement ${config.models.implementer.model}/${config.models.implementer.reasoning}`, 'validate', `review ${reviewer.model}/${reviewer.reasoning}`, `corrections max ${config.maxCorrectionCycles}`]; }

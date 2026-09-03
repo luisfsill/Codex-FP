@@ -7,9 +7,11 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$invocationPath = (Get-Location).Path
 
 if ($Uninstall) {
-  & (Join-Path $InstallRoot 'scripts\install-codex-feature-pipeline.ps1') -Uninstall
+  $uninstaller = Join-Path $InstallRoot 'scripts\install-codex-feature-pipeline.ps1'
+  if (Test-Path -LiteralPath $uninstaller) { & $uninstaller -Uninstall }
   if ($PSCmdlet.ShouldProcess($InstallRoot, 'Remove Codex FP installation')) {
     if (Test-Path -LiteralPath $InstallRoot) { Remove-Item -LiteralPath $InstallRoot -Recurse -Force }
   }
@@ -30,10 +32,11 @@ try {
   if (-not $source) { throw 'O arquivo baixado não contém uma pasta de projeto válida.' }
   if ($PSCmdlet.ShouldProcess($InstallRoot, 'Install Codex FP')) {
     New-Item -ItemType Directory -Force -Path $InstallRoot | Out-Null
-    Copy-Item -LiteralPath (Join-Path $source.FullName '*') -Destination $InstallRoot -Recurse -Force
-    & (Join-Path $InstallRoot 'scripts\install-codex-feature-pipeline.ps1')
+    Get-ChildItem -LiteralPath $source.FullName -Force | Copy-Item -Destination $InstallRoot -Recurse -Force
+    $projectPath = if ((Test-Path -LiteralPath (Join-Path $invocationPath '.git')) -or (Test-Path -LiteralPath (Join-Path $invocationPath 'AGENTS.md')) -or (Test-Path -LiteralPath (Join-Path $invocationPath 'package.json'))) { $invocationPath } else { $null }
+    & (Join-Path $InstallRoot 'scripts\install-codex-feature-pipeline.ps1') -ProjectPath $projectPath
     Write-Host "Codex FP instalado em $InstallRoot"
-    & (Join-Path $InstallRoot 'bin\feature.js') --version
+    node (Join-Path $InstallRoot 'bin\feature.js') --version
   }
 }
 finally {

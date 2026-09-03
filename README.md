@@ -2,7 +2,7 @@
 
 Pipeline local para organizar solicitações de implementação no Codex. Ele identifica o tipo de tarefa, indica o fluxo recomendado entre planejamento, implementação, validação e revisão, e não aciona o processo para perguntas ou explicações.
 
-> Projeto em desenvolvimento: a versão atual possui classificação, CLI, `--dry-run`, hook, configuração, testes e instalador Windows. A execução automática completa das fases Sol/Luna ainda está sendo finalizada.
+> Versão 1.0: planejamento, implementação, validação, revisão e até dois ciclos de correção com Sol e Luna.
 
 ## Requisitos
 
@@ -96,11 +96,17 @@ feature --implement-plan .\caminho\do\plano.md
 feature --review-only
 ```
 
-Na versão atual, `--dry-run` é o modo recomendado para testar. Os demais modos fazem parte da interface planejada, mas a execução completa das fases ainda está em desenvolvimento.
+Use `--dry-run` para conferir a rota sem gastar tokens. Sem essa opção, o pipeline executa as fases reais pelo Codex CLI.
 
 ## Instalar em outro projeto
 
-O instalador global precisa ser executado apenas uma vez por computador. Em cada novo projeto, copie `.codex/feature-pipeline.json` e configure o hook `UserPromptSubmit` apontando para o `src/hook.js` desta instalação, preservando os hooks existentes.
+O instalador global precisa ser executado apenas uma vez por computador. Em cada novo projeto, execute:
+
+```powershell
+feature install-project
+```
+
+O comando cria a configuração, adiciona o `UserPromptSubmit`, preserva hooks existentes, atualiza o `AGENTS.md` e ignora os artefatos de execução. Quando o instalador remoto é executado dentro de um projeto, essa configuração também acontece automaticamente.
 
 ## Desinstalação
 
