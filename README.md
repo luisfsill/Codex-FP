@@ -4,6 +4,18 @@ Pipeline local para organizar solicitações de implementação no Codex. Ele id
 
 > Versão 1.0: planejamento, implementação, validação, revisão e até dois ciclos de correção com Sol e Luna.
 
+## Instalação com um comando
+
+Em um PowerShell, execute:
+
+```powershell
+irm https://luisfsill.github.io/Codex-FP/install.ps1 | iex
+```
+
+O script baixa a versão atual, instala em `%LOCALAPPDATA%\Codex-FP` e cria os comandos globais `feature` e `codex-feature`.
+
+Para atualizar, execute o mesmo comando novamente.
+
 ## Requisitos
 
 - Windows 10 ou superior
@@ -29,22 +41,6 @@ O instalador cria `feature` e `codex-feature` em `%USERPROFILE%\.local\bin`. Fec
 ```powershell
 feature --version
 codex-feature --version
-```
-
-### Instalação com um comando
-
-Em um PowerShell, execute:
-
-```powershell
-irm https://luisfsill.github.io/Codex-FP/install.ps1 | iex
-```
-
-O script baixa a versão atual, instala em `%LOCALAPPDATA%\Codex-FP` e cria os launchers globais. Para ambientes corporativos, prefira baixar o arquivo, revisar o conteúdo e executá-lo localmente.
-
-Para atualizar, execute o mesmo comando novamente. Para remover:
-
-```powershell
-& "$env:LOCALAPPDATA\Codex-FP\install.ps1" -Uninstall
 ```
 
 ## Usar no Postify
