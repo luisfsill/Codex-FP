@@ -36,7 +36,7 @@ codex-feature --version
 Em um PowerShell, execute:
 
 ```powershell
-irm https://raw.githubusercontent.com/luisfsill/Codex-FP/main/install.ps1 | iex
+irm https://luisfsill.github.io/Codex-FP/install.ps1 | iex
 ```
 
 O script baixa a versão atual, instala em `%LOCALAPPDATA%\Codex-FP` e cria os launchers globais. Para ambientes corporativos, prefira baixar o arquivo, revisar o conteúdo e executá-lo localmente.
