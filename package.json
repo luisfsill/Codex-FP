@@ -1,0 +1,10 @@
+{
+  "name": "codex-feature-pipeline",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Reusable Codex planning, implementation, validation and review pipeline.",
+  "type": "module",
+  "bin": { "feature": "./bin/feature.js", "codex-feature": "./bin/feature.js" },
+  "scripts": { "test": "node --test", "dry-run": "node ./bin/feature.js --dry-run \"Adicionar uma funcionalidade\"" },
+  "engines": { "node": ">=18" }
+}

@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { classify } from './classifier.js';
+const input = JSON.parse(fs.readFileSync(0, 'utf8') || '{}');
+const prompt = input.prompt || '';
+if (process.env.CODEX_FEATURE_PIPELINE_ACTIVE === '1' || prompt.includes('[CODEX_FEATURE_PIPELINE_PHASE]')) process.exit(0);
+const result = classify(prompt);
+if (result.intent !== 'implementation') process.exit(0);
+const root = process.cwd();
+const inbox = path.join(root, '.codex', 'pipeline', 'inbox');
+fs.mkdirSync(inbox, { recursive: true });
+const id = String(input.turn_id || Date.now()).replace(/[^a-zA-Z0-9._-]/g, '_');
+fs.writeFileSync(path.join(inbox, `${id}.json`), JSON.stringify({ turn_id: input.turn_id, prompt, classification: result, created_at: new Date().toISOString() }, null, 2));
+process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: `Solicitação de implementação detectada (${result.level}). Execute o pipeline local: feature --request-file .codex/pipeline/inbox/${id}.json. Não acione o pipeline em fases que contenham [CODEX_FEATURE_PIPELINE_PHASE].` } }));
