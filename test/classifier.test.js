@@ -6,3 +6,4 @@ test('classifica implementação comum', () => assert.deepEqual(classify('Implem
 test('classifica integração como complexa', () => assert.equal(classify('Criar integração com webhook').level, 'COMPLEXA'));
 test('classifica autenticação como crítica', () => assert.equal(classify('Alterar autenticação').level, 'CRITICA'));
 test('classifica extensão e publicação como complexa', () => assert.equal(classify('Implementar instalação e publicação da extensão').level, 'COMPLEXA'));
+test('classifica execução de plano como implementação', () => assert.equal(classify('Executar o Plano de implementação da extensão LeadGen').level, 'COMPLEXA'));

@@ -1,5 +1,5 @@
 const question = /^(como|por que|porque|qual|quais|o que|explique|compare|analise|resuma|mostre|me diga)\b/i;
-const implementation = /\b(implementar|implemente|criar|crie|adicionar|adicione|alterar|altere|corrigir|corrija|remover|remova|refatorar|refatore|migrar|migre|integrar|integre|configure|configurar)\b/i;
+const implementation = /\b(implementar|implemente|criar|crie|adicionar|adicione|alterar|altere|corrigir|corrija|remover|remova|refatorar|refatore|migrar|migre|integrar|integre|configure|configurar|executar|execute|aplicar|aplique|seguir|siga)\b/i;
 const critical = /\b(auth|autentic|autentica[cç][aã]o|senha|password|secret|segredo|pagamento|billing|financeiro|permiss|privacidade|delete|deletar|excluir|destrut|migra[cç][aã]o de banco|produ[cç][aã]o|deploy)\b/i;
 const complex = /\b(refator|arquitet|migra|integra|webhook|fila|background|concorr|multi[- ]?tenant|sincron|provedor|api|banco|database|infra|extens[aã]o|publica[cç][aã]o|empacotamento)\b/i;
 export function classify(prompt, forced) {
