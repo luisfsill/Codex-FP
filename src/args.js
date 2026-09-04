@@ -1,7 +1,8 @@
 import { PipelineError } from './errors.js';
 const valueOptions = new Set(['implement-plan', 'config', 'request-file', 'project']);
-const booleanOptions = new Set(['simple', 'normal', 'complex', 'critical', 'plan-only', 'review-only', 'dry-run', 'help', 'version', 'approve-for-me']);
+const booleanOptions = new Set(['simple', 'normal', 'complex', 'critical', 'plan-only', 'review-only', 'dry-run', 'help', 'version', 'approve-for-me', 'json']);
 export function parseArgs(args) {
+  const command = ['status', 'watch'].includes(args[0]) ? args.shift() : null;
   if (args[0] === 'install-project') args = ['--install-project', ...args.slice(1)];
   const flags = {}; const promptParts = [];
   for (let index = 0; index < args.length; index += 1) {
@@ -19,7 +20,7 @@ export function parseArgs(args) {
   }
   if (['simple', 'normal', 'complex', 'critical'].filter((key) => flags[key]).length > 1) throw new PipelineError('Escolha somente um nível de complexidade.', 2, 'invalid_arguments');
   if (['plan-only', 'implement-plan', 'review-only'].filter((key) => flags[key]).length > 1) throw new PipelineError('Escolha somente um modo de execução.', 2, 'invalid_arguments');
-  return { flags, prompt: promptParts.join(' ').trim() };
+  return { command, flags, prompt: promptParts.join(' ').trim() };
 }
 export function forcedLevel(flags) {
   if (flags.simple) return 'TRIVIAL'; if (flags.normal) return 'NORMAL'; if (flags.complex) return 'COMPLEXA'; if (flags.critical) return 'CRITICA'; return null;
