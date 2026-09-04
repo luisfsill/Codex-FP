@@ -43,17 +43,19 @@ feature --version
 codex-feature --version
 ```
 
-## Usar no Postify
+## Usar no LeadGen
 
-No Postify, a integração já está preparada em `.codex/hooks.json`, `.codex/feature-pipeline.json` e `AGENTS.md`.
+No LeadGen, a integração deve estar preparada em `.codex/hooks.json`, `.codex/feature-pipeline.json` e `AGENTS.md`. Se ainda não estiver, execute `feature install-project` na pasta do projeto.
 
 Depois de abrir o projeto no Codex, peça normalmente:
 
 ```text
-Implemente filtros salvos no Kanban.
+Implemente o plano de instalacao e publicacao da extensao LeadGen.
 ```
 
-Você não precisa escrever `feature` em cada pedido. O hook reconhece solicitações de implementação e prepara o pipeline. Perguntas como `Como funciona o Kanban?` não acionam o fluxo.
+Você não precisa escrever `feature` em cada pedido. O hook reconhece solicitações de implementação e prepara o pipeline. Perguntas como `Como funciona o LeadGen?` não acionam o fluxo.
+
+As mesmas instruções funcionam em qualquer outro projeto configurado com `feature install-project`.
 
 ## Acompanhar uma execucao
 
