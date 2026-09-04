@@ -5,8 +5,8 @@ import { PipelineError } from './errors.js';
 export const DEFAULT_CONFIG = Object.freeze({
   version: 1,
   models: {
-    planner: { model: 'gpt-5.6-sol', reasoning: 'medium' }, implementer: { model: 'gpt-5.6-luna', reasoning: 'medium' },
-    reviewer: { model: 'gpt-5.6-sol', reasoning: 'low' }, criticalReviewer: { model: 'gpt-5.6-sol', reasoning: 'medium' }
+    planner: { model: 'gpt-6-astra', reasoning: 'medium' }, implementer: { model: 'gpt-5.6-luna', reasoning: 'medium' },
+    reviewer: { model: 'gpt-5.6-sol', reasoning: 'low' }, criticalReviewer: { model: 'gpt-6-astra', reasoning: 'medium' }
   },
   maxCorrectionCycles: 2, codexTimeoutMs: 1800000, validationTimeoutMs: 600000, validation: [],
   protectedPaths: ['.env', '.env.local', '.env.*', 'secrets/**'], approveForMe: false
