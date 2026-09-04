@@ -55,6 +55,30 @@ Implemente filtros salvos no Kanban.
 
 Você não precisa escrever `feature` em cada pedido. O hook reconhece solicitações de implementação e prepara o pipeline. Perguntas como `Como funciona o Kanban?` não acionam o fluxo.
 
+## Acompanhar uma execucao
+
+Para consultar se o Codex FP esta sendo usado no projeto atual:
+
+```powershell
+feature status
+```
+
+O comando mostra o estado (`IDLE`, `RUNNING`, `APPROVED` ou `FAILED`), o projeto, a tarefa, a fase atual, o modelo e o ID da execucao.
+
+Para acompanhar as fases em tempo real ate a conclusao:
+
+```powershell
+feature watch
+```
+
+Para obter o mesmo status em JSON, util para automacoes:
+
+```powershell
+feature status --json
+```
+
+Execute esses comandos dentro da pasta do projeto. O status e salvo em `.codex/pipeline/status.json` e atualizado durante planejamento, implementacao, validacao, revisao e correcoes.
+
 ## Testar sem alterar arquivos
 
 ```powershell
