@@ -1,6 +1,6 @@
 {
   "name": "codex-feature-pipeline",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "description": "Reusable Codex planning, implementation, validation and review pipeline.",
   "type": "module",

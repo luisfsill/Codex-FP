@@ -18,7 +18,7 @@ test('rejeita modos conflitantes', () => {
 
 test('carrega defaults sem arquivo e rejeita config inválida', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'codex-fp-config-'));
-  assert.equal(loadConfig(root).config.models.planner.model, 'gpt-5.6-sol');
+  assert.equal(loadConfig(root).config.models.planner.model, 'gpt-6-astra');
   fs.mkdirSync(path.join(root, '.codex'));
   fs.writeFileSync(path.join(root, '.codex', 'feature-pipeline.json'), JSON.stringify({ maxCorrectionCycles: 9 }));
   assert.throws(() => loadConfig(root), /entre 0 e 2/);
@@ -30,4 +30,11 @@ test('falha para arquivo explícito ausente e modelo vazio', () => {
   fs.mkdirSync(path.join(root, '.codex'));
   fs.writeFileSync(path.join(root, '.codex', 'feature-pipeline.json'), JSON.stringify({ models: { planner: { model: '', reasoning: 'medium' } } }));
   assert.throws(() => loadConfig(root), /planner/);
+});
+
+test('rejeita codexCommand vazio', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'codex-fp-config-'));
+  fs.mkdirSync(path.join(root, '.codex'));
+  fs.writeFileSync(path.join(root, '.codex', 'feature-pipeline.json'), JSON.stringify({ codexCommand: '  ' }));
+  assert.throws(() => loadConfig(root), /codexCommand/);
 });

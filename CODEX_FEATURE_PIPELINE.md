@@ -4,4 +4,6 @@ Núcleo independente para Postify e outros repositórios. A versão 1.0 executa 
 
 Modelos padrão: Sol para planejamento/revisão e Luna para implementação. O pipeline não faz commits, push, deploy, reset do Git ou leitura de segredos.
 
+O Codex CLI pode ser localizado por `codexCommand`, `CODEX_CLI_PATH`, `PATH` ou pela instalação do Codex Desktop no Windows. O estado principal é reconciliado com o arquivo da execução para que falhas concluídas não permaneçam como `RUNNING`.
+
 Use `feature install-project` dentro de cada projeto. Depois disso, solicitações de implementação feitas no Codex são detectadas pelo hook. Para execução manual, use `feature "Implementar ..."`.

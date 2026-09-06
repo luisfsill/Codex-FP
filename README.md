@@ -81,6 +81,27 @@ feature status --json
 
 Execute esses comandos dentro da pasta do projeto. O status e salvo em `.codex/pipeline/status.json` e atualizado durante planejamento, implementacao, validacao, revisao e correcoes.
 
+Se uma execução falhar, `status` e `watch` reconciliam o arquivo principal com o estado registrado na pasta da execução. Assim, uma falha concluída não permanece exibida como `RUNNING`.
+
+## Localização do Codex CLI
+
+O pipeline procura o Codex CLI nesta ordem:
+
+1. `codexCommand` em `.codex/feature-pipeline.json`;
+2. variável de ambiente `CODEX_CLI_PATH`;
+3. comando `codex` disponível no `PATH`;
+4. instalação do Codex Desktop em `%LOCALAPPDATA%\OpenAI\Codex\bin` no Windows.
+
+Para definir um caminho explícito no projeto:
+
+```json
+{
+  "codexCommand": "C:/caminho/para/codex.exe"
+}
+```
+
+Quando o executável não for encontrado, a execução termina como `FAILED` e o erro aparece em `feature status`, em vez de deixar o acompanhamento preso em `initializing`.
+
 ## Testar sem alterar arquivos
 
 ```powershell

@@ -26,6 +26,7 @@ export function loadConfig(root, explicitPath) {
 }
 export function validateConfig(config) {
   if (!Number.isInteger(config.maxCorrectionCycles) || config.maxCorrectionCycles < 0 || config.maxCorrectionCycles > 2) throw new PipelineError('maxCorrectionCycles deve estar entre 0 e 2.', 3, 'invalid_config');
+  if (config.codexCommand !== undefined && (typeof config.codexCommand !== 'string' || !config.codexCommand.trim())) throw new PipelineError('codexCommand deve ser uma string não vazia.', 3, 'invalid_config');
   for (const role of ['planner', 'implementer', 'reviewer', 'criticalReviewer']) { const entry = config.models[role]; if (!entry?.model || !reasoningValues.has(entry.reasoning)) throw new PipelineError(`Modelo/configuração inválida para ${role}.`, 3, 'invalid_config'); }
   if (!Array.isArray(config.validation) || !config.validation.every((item) => typeof item === 'string')) throw new PipelineError('validation deve ser uma lista de comandos.', 3, 'invalid_config');
 }
