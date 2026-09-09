@@ -102,6 +102,18 @@ Para definir um caminho explícito no projeto:
 
 Quando o executável não for encontrado, a execução termina como `FAILED` e o erro aparece em `feature status`, em vez de deixar o acompanhamento preso em `initializing`.
 
+No Windows, o pipeline procura extensões executáveis (`.exe`, `.com`, `.cmd` e `.bat`) antes de aceitar um shim sem extensão. Arquivos `.cmd` e `.bat` usam o shell somente quando necessário; executáveis nativos e macOS/Linux continuam sem shell.
+
+Para diagnosticar a instalação no Windows:
+
+```powershell
+where.exe codex
+codex --version
+feature status
+```
+
+Em caso de falha, a mensagem mostra o comando solicitado e os caminhos testados. Corrija o `PATH`, reinstale o Codex CLI ou defina `codexCommand`/`CODEX_CLI_PATH` com o caminho válido.
+
 ## Testar sem alterar arquivos
 
 ```powershell

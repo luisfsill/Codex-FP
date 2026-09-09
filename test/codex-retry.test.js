@@ -15,6 +15,10 @@ test('repete uma vez quando a saída estruturada é inválida', async () => {
     options.onStdout?.('{}\n');
     return { code: 0, stdout: '', stderr: '' };
   };
-  const result = await runCodexPhase({ kind: 'review', prompt: 'Revisar', root: runDir, runDir, model: 'gpt-test', reasoning: 'low', sandbox: 'read-only', timeoutMs: 1000, runner, commandResolver: () => 'codex-test' });
+  const invocations = [];
+  const observedRunner = async (command, args, options) => { invocations.push({ command, args, options }); return runner(command, args, options); };
+  const result = await runCodexPhase({ kind: 'review', prompt: 'Revisar', root: runDir, runDir, model: 'gpt-test', reasoning: 'low', sandbox: 'read-only', timeoutMs: 1000, runner: observedRunner, commandResolver: () => ({ command: 'C:/tools/codex.cmd', shell: true }) });
   assert.equal(result.verdict, 'APPROVED'); assert.equal(calls, 2);
+  assert.equal(invocations[0].command, 'C:/tools/codex.cmd'); assert.equal(invocations[0].options.shell, true);
+  assert.deepEqual(invocations[0].args.slice(0, 5), ['exec', '-m', 'gpt-test', '-c', 'model_reasoning_effort="low"']);
 });

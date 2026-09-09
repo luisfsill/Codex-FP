@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { resolveCodexCommand } from '../src/codex-command.js';
+import { resolveCodexCommand, resolveCodexInvocation } from '../src/codex-command.js';
 
 function executable(root, relativePath) {
   const file = path.join(root, relativePath);
@@ -32,6 +32,27 @@ test('encontra codex no PATH', () => {
   assert.equal(resolveCodexCommand({ env: { PATH: root, PATHEXT: '.EXE' }, platform: 'win32' }).toLowerCase(), expected.toLowerCase());
 });
 
+test('prioriza codex.cmd sobre um shim sem extensão no Windows', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'codex-fp-command-'));
+  executable(root, 'codex'); const expected = executable(root, 'codex.cmd');
+  const result = resolveCodexInvocation({ env: { PATH: root, PATHEXT: '.EXE;.CMD' }, platform: 'win32' });
+  assert.equal(result.command.toLowerCase(), expected.toLowerCase()); assert.equal(result.shell, true);
+});
+
+test('caminho absoluto sem extensão encontra codex.cmd', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'codex-fp-command-'));
+  const expected = executable(root, 'codex.cmd');
+  const result = resolveCodexInvocation({ configuredCommand: path.join(root, 'codex'), env: { PATHEXT: '.CMD;.EXE' }, platform: 'win32' });
+  assert.equal(result.command.toLowerCase(), expected.toLowerCase()); assert.equal(result.shell, true);
+});
+
+test('mantém binário sem shell em macOS e Linux', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'codex-fp-command-'));
+  const expected = executable(root, 'codex');
+  const result = resolveCodexInvocation({ configuredCommand: expected, env: {}, platform: 'linux' });
+  assert.equal(result.command, expected); assert.equal(result.shell, false);
+});
+
 test('encontra a instalação mais recente do Codex Desktop', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'codex-fp-command-'));
   const older = executable(root, path.join('OpenAI', 'Codex', 'bin', 'old', 'codex.exe'));
@@ -41,5 +62,5 @@ test('encontra a instalação mais recente do Codex Desktop', () => {
 });
 
 test('explica quando o Codex CLI não é encontrado', () => {
-  assert.throws(() => resolveCodexCommand({ env: { PATH: '' }, platform: 'win32' }), (error) => error.category === 'missing_executable' && /Codex CLI não encontrado/.test(error.message));
+  assert.throws(() => resolveCodexCommand({ env: { PATH: '', PATHEXT: '.EXE;.CMD' }, platform: 'win32' }), (error) => error.category === 'missing_executable' && /Comando solicitado: codex/.test(error.message) && /Caminhos testados/.test(error.message) && /where\.exe codex/.test(error.message));
 });
